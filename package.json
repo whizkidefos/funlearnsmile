@@ -1,0 +1,25 @@
+{
+  "name": "funlearnsmile-theme",
+  "version": "1.0.0",
+  "description": "A vibrant, playful WordPress theme for FunLearn Smile charity",
+  "main": "index.php",
+  "scripts": {
+    "dev": "tailwindcss -i ./assets/css/main.css -o ./assets/css/output.css --watch",
+    "build": "tailwindcss -i ./assets/css/main.css -o ./assets/css/output.css --minify",
+    "watch": "npm run dev"
+  },
+  "keywords": [
+    "wordpress",
+    "theme",
+    "charity",
+    "education",
+    "children"
+  ],
+  "author": "Fun Learn Smile Team",
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+}

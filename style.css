@@ -1,0 +1,18 @@
+/*
+Theme Name: FunLearn Smile
+Theme URI: https://www.funlearnsmile.org
+Author: Efosa Igbinehi: Fun Learn Smile Technical Team Lead
+Author URI: https://www.iefosa.me
+Description: A vibrant, playful WordPress theme for FunLearn Smile - bringing joyful, play-based education to disadvantaged children around the world.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: funlearnsmile
+Tags: charity, education, children, nonprofit, colorful, playful
+
+This theme, like WordPress, is licensed under the GPL.
+Use it to make something cool, have fun, and share what you've learned.
+*/
+
+/* This file serves as the WordPress theme identifier.
+   All actual styles are compiled via Tailwind CSS and custom CSS in assets/css/main.css */
