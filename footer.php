@@ -45,19 +45,15 @@
                     <div class="flex items-center space-x-3 mb-4">
                         <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/icon.png' ); ?>" 
                              alt="<?php bloginfo( 'name' ); ?>" 
-                             class="h-12 w-12">
+                             class="h-16 w-16">
                         <h3 class="text-2xl font-fredoka font-bold">
                             <span class="text-bright-yellow">Fun</span><span class="text-white">Learn</span><span class="text-grass-green">Smile</span>
                         </h3>
                     </div>
                     <p class="text-white/90 font-nunito leading-relaxed mb-6">
                         <?php 
-                        $description = get_bloginfo( 'description', 'display' );
-                        if ( $description ) :
-                            echo esc_html( $description );
-                        else :
-                            esc_html_e( 'Bringing joyful, play-based education to disadvantaged children around the world.', 'funlearnsmile' );
-                        endif;
+                        $footer_description = get_theme_mod( 'footer_description', 'Bringing joyful, play-based education to disadvantaged children around the world.' );
+                        echo wp_kses_post( $footer_description );
                         ?>
                     </p>
                     

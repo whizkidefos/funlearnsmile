@@ -205,7 +205,6 @@
 
 ::-webkit-scrollbar-thumb {
   background: var(--soft-coral);
-  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

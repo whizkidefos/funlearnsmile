@@ -163,6 +163,19 @@ function funlearnsmile_customize_register( $wp_customize ) {
         'type'    => 'email',
     ) );
 
+    // Contact Form Recipients (multiple emails)
+    $wp_customize->add_setting( 'contact_form_recipients', array(
+        'default'           => 'infofunlearnsmile@gmail.com',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ) );
+
+    $wp_customize->add_control( 'contact_form_recipients', array(
+        'label'       => __( 'Contact Form Recipients', 'funlearnsmile' ),
+        'description' => __( 'Enter email addresses (one per line) to receive contact form submissions.', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_contact',
+        'type'        => 'textarea',
+    ) );
+
     // Contact Phone
     $wp_customize->add_setting( 'contact_phone', array(
         'default'           => '',

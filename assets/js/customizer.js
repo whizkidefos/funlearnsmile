@@ -63,4 +63,11 @@
         } );
     } );
 
+    // Footer Description
+    wp.customize( 'footer_description', function( value ) {
+        value.bind( function( to ) {
+            $( '.footer-column p' ).first().html( to );
+        } );
+    } );
+
 } )( jQuery );

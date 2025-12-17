@@ -14,7 +14,7 @@
 
 <!-- Header -->
 <header class="site-header fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300" id="masthead">
-    <nav class="container-custom py-4" role="navigation" aria-label="<?php esc_attr_e( 'Primary Navigation', 'funlearnsmile' ); ?>">
+    <nav class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4" role="navigation" aria-label="<?php esc_attr_e( 'Primary Navigation', 'funlearnsmile' ); ?>">
         <div class="flex items-center justify-between">
             
             <!-- Logo -->
@@ -27,9 +27,9 @@
                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="flex items-center space-x-3">
                         <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/icon.png' ); ?>" 
                              alt="<?php bloginfo( 'name' ); ?>" 
-                             class="h-12 w-12">
+                             class="h-16 w-16 md:h-20 md:w-20">
                         <div>
-                            <h1 class="text-2xl font-fredoka font-bold text-deep-blue">
+                            <h1 class="text-2xl md:text-3xl font-fredoka font-bold text-deep-blue">
                                 <span class="text-soft-coral">Fun</span><span class="text-deep-blue">Learn</span><span class="text-sky-blue">Smile</span>
                             </h1>
                         </div>
@@ -77,7 +77,7 @@
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/icon.png' ); ?>" 
                  alt="<?php bloginfo( 'name' ); ?>" 
-                 class="h-10 w-10">
+                 class="h-14 w-14">
             <button class="mobile-menu-close p-2 focus:outline-none focus:ring-2 focus:ring-soft-coral rounded-lg" 
                     aria-label="<?php esc_attr_e( 'Close mobile menu', 'funlearnsmile' ); ?>">
                 <svg class="w-8 h-8 text-deep-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">

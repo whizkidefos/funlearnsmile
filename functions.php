@@ -162,3 +162,54 @@ add_action( 'after_setup_theme', 'funlearnsmile_custom_logo_setup' );
  */
 require get_template_directory() . '/inc/template-functions.php';
 require get_template_directory() . '/inc/customizer.php';
+
+/**
+ * Handle Contact Form Submission
+ */
+function funlearnsmile_handle_contact_form() {
+    // Verify nonce
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'funlearnsmile_contact_nonce' ) ) {
+        wp_send_json_error( array( 'message' => 'Security check failed.' ) );
+    }
+
+    // Sanitize input
+    $name = sanitize_text_field( $_POST['name'] );
+    $email = sanitize_email( $_POST['email'] );
+    $subject = sanitize_text_field( $_POST['subject'] );
+    $message = sanitize_textarea_field( $_POST['message'] );
+
+    // Validate
+    if ( empty( $name ) || empty( $email ) || empty( $message ) ) {
+        wp_send_json_error( array( 'message' => 'Please fill in all required fields.' ) );
+    }
+
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( array( 'message' => 'Please enter a valid email address.' ) );
+    }
+
+    // Get recipients from customizer
+    $recipients_text = get_theme_mod( 'contact_form_recipients', 'infofunlearnsmile@gmail.com' );
+    $recipients = array_filter( array_map( 'trim', explode( "\n", $recipients_text ) ) );
+
+    // Prepare email
+    $email_subject = 'Contact Form: ' . $subject;
+    $email_message = "Name: {$name}\n";
+    $email_message .= "Email: {$email}\n\n";
+    $email_message .= "Message:\n{$message}";
+
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        "Reply-To: {$name} <{$email}>",
+    );
+
+    // Send email to all recipients
+    $sent = wp_mail( $recipients, $email_subject, $email_message, $headers );
+
+    if ( $sent ) {
+        wp_send_json_success( array( 'message' => 'Thank you! Your message has been sent successfully.' ) );
+    } else {
+        wp_send_json_error( array( 'message' => 'Sorry, there was an error sending your message. Please try again.' ) );
+    }
+}
+add_action( 'wp_ajax_funlearnsmile_contact_form', 'funlearnsmile_handle_contact_form' );
+add_action( 'wp_ajax_nopriv_funlearnsmile_contact_form', 'funlearnsmile_handle_contact_form' );
