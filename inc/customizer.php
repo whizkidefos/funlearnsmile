@@ -87,6 +87,20 @@ function funlearnsmile_customize_register( $wp_customize ) {
         'priority' => 20,
     ) );
 
+    // Footer Description Text
+    $wp_customize->add_setting( 'footer_description', array(
+        'default'           => 'Bringing joyful, play-based education to disadvantaged children around the world.',
+        'sanitize_callback' => 'wp_kses_post',
+        'transport'         => 'postMessage',
+    ) );
+
+    $wp_customize->add_control( 'footer_description', array(
+        'label'       => __( 'Footer Description', 'funlearnsmile' ),
+        'description' => __( 'The text that appears below the logo in the footer.', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_footer',
+        'type'        => 'textarea',
+    ) );
+
     // Footer Copyright Text
     $wp_customize->add_setting( 'footer_copyright', array(
         'default'           => '',
@@ -99,6 +113,19 @@ function funlearnsmile_customize_register( $wp_customize ) {
         'description' => __( 'Add custom copyright text for the footer.', 'funlearnsmile' ),
         'section'     => 'funlearnsmile_footer',
         'type'        => 'textarea',
+    ) );
+
+    // Footer Credit Link
+    $wp_customize->add_setting( 'footer_credit_url', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ) );
+
+    $wp_customize->add_control( 'footer_credit_url', array(
+        'label'       => __( 'Credit Link URL', 'funlearnsmile' ),
+        'description' => __( 'URL for "Built with love in Manchester" link (leave empty to hide)', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_footer',
+        'type'        => 'url',
     ) );
 
     // Social Media Section
@@ -198,6 +225,32 @@ function funlearnsmile_customize_register( $wp_customize ) {
         'label'   => __( 'Address', 'funlearnsmile' ),
         'section' => 'funlearnsmile_contact',
         'type'    => 'textarea',
+    ) );
+
+    // WhatsApp Number
+    $wp_customize->add_setting( 'whatsapp_number', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'whatsapp_number', array(
+        'label'       => __( 'WhatsApp Number', 'funlearnsmile' ),
+        'description' => __( 'Enter your WhatsApp number with country code (e.g., 447123456789). Leave empty to hide the WhatsApp button.', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_contact',
+        'type'        => 'text',
+    ) );
+
+    // WhatsApp Welcome Message
+    $wp_customize->add_setting( 'whatsapp_message', array(
+        'default'           => 'Hi FunLearn Smile! I have a question about...',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'whatsapp_message', array(
+        'label'       => __( 'WhatsApp Welcome Message', 'funlearnsmile' ),
+        'description' => __( 'The pre-filled message when someone clicks the WhatsApp button.', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_contact',
+        'type'        => 'text',
     ) );
 }
 add_action( 'customize_register', 'funlearnsmile_customize_register' );

@@ -213,3 +213,65 @@ function funlearnsmile_handle_contact_form() {
 }
 add_action( 'wp_ajax_funlearnsmile_contact_form', 'funlearnsmile_handle_contact_form' );
 add_action( 'wp_ajax_nopriv_funlearnsmile_contact_form', 'funlearnsmile_handle_contact_form' );
+
+/**
+ * Custom comment callback
+ */
+function funlearnsmile_comment( $comment, $args, $depth ) {
+    ?>
+    <li <?php comment_class( 'comment-item bg-white rounded-2xl p-6 md:p-8 shadow-md hover:shadow-xl transition-all duration-300' ); ?> id="comment-<?php comment_ID(); ?>">
+        
+        <div class="comment-body">
+            
+            <div class="comment-author-section flex items-start space-x-4 mb-4">
+                
+                <div class="comment-avatar flex-shrink-0">
+                    <?php echo get_avatar( $comment, 64, '', '', array( 'class' => 'rounded-full shadow-lg' ) ); ?>
+                </div>
+
+                <div class="comment-metadata flex-1">
+                    <div class="comment-author-name font-fredoka font-bold text-xl text-deep-blue mb-1">
+                        <?php comment_author_link(); ?>
+                    </div>
+                    <div class="comment-date flex items-center space-x-3 text-sm text-gray-500 font-nunito">
+                        <time datetime="<?php comment_time( 'c' ); ?>">
+                            <?php
+                            printf(
+                                esc_html__( '%1$s at %2$s', 'funlearnsmile' ),
+                                get_comment_date( '', $comment ),
+                                get_comment_time()
+                            );
+                            ?>
+                        </time>
+                        <?php
+                        comment_reply_link(
+                            array_merge(
+                                $args,
+                                array(
+                                    'depth'     => $depth,
+                                    'max_depth' => $args['max_depth'],
+                                    'before'    => '<span class="text-sky-blue hover:text-soft-coral transition-colors duration-300">',
+                                    'after'     => '</span>',
+                                )
+                            )
+                        );
+                        ?>
+                        <?php edit_comment_link( esc_html__( 'Edit', 'funlearnsmile' ), '<span class="text-gray-400 hover:text-gray-600">', '</span>' ); ?>
+                    </div>
+                </div>
+
+            </div>
+
+            <?php if ( '0' === $comment->comment_approved ) : ?>
+                <p class="comment-awaiting-moderation bg-bright-yellow/10 text-warm-orange border-l-4 border-bright-yellow px-4 py-3 rounded-lg font-nunito mb-4">
+                    <?php esc_html_e( 'Your comment is awaiting moderation.', 'funlearnsmile' ); ?>
+                </p>
+            <?php endif; ?>
+
+            <div class="comment-content font-nunito text-gray-700 leading-relaxed prose prose-sm max-w-none">
+                <?php comment_text(); ?>
+            </div>
+
+        </div>
+    <?php
+}

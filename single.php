@@ -39,7 +39,15 @@ get_header();
                     </h1>
 
                     <!-- Post Meta -->
-                    <div class="post-meta flex items-center justify-center space-x-6 text-gray-600 font-nunito">
+                    <div class="post-meta flex flex-wrap items-center justify-center gap-6 text-gray-600 font-nunito">
+                        
+                        <!-- Author with Avatar -->
+                        <span class="flex items-center space-x-2">
+                            <?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', '', array( 'class' => 'rounded-full' ) ); ?>
+                            <span><?php echo esc_html( get_the_author() ); ?></span>
+                        </span>
+
+                        <!-- Date -->
                         <span class="flex items-center space-x-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -48,11 +56,17 @@ get_header();
                                 <?php echo esc_html( get_the_date() ); ?>
                             </time>
                         </span>
+
+                        <!-- Reading Time -->
+                        <?php
+                        $word_count = str_word_count( strip_tags( get_the_content() ) );
+                        $reading_time = ceil( $word_count / 200 );
+                        ?>
                         <span class="flex items-center space-x-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <span><?php echo esc_html( get_the_author() ); ?></span>
+                            <span><?php echo esc_html( $reading_time ); ?> min read</span>
                         </span>
                     </div>
                 </header>
