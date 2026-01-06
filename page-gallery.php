@@ -39,18 +39,23 @@ get_header();
                 <button class="gallery-filter-btn active px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="all">
                     All Photos
                 </button>
-                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="activities">
-                    Activities
+                <?php
+                // Get all gallery categories dynamically
+                $gallery_categories = get_terms( array(
+                    'taxonomy'   => 'gallery_category',
+                    'hide_empty' => true,
+                ) );
+                
+                if ( ! empty( $gallery_categories ) && ! is_wp_error( $gallery_categories ) ) :
+                    foreach ( $gallery_categories as $category ) :
+                ?>
+                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="<?php echo esc_attr( $category->slug ); ?>">
+                    <?php echo esc_html( $category->name ); ?>
                 </button>
-                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="learning">
-                    Learning
-                </button>
-                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="events">
-                    Events
-                </button>
-                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="community">
-                    Community
-                </button>
+                <?php 
+                    endforeach;
+                endif;
+                ?>
             </div>
         </div>
     </section>
@@ -62,53 +67,61 @@ get_header();
             <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 
                 <?php
-                // Sample gallery items - In production, these would come from WordPress media library or custom post type
-                $gallery_items = array(
-                    array('category' => 'activities', 'title' => 'Children Playing Games', 'image' => 'gallery-1.jpg'),
-                    array('category' => 'learning', 'title' => 'Reading Time', 'image' => 'gallery-2.jpg'),
-                    array('category' => 'activities', 'title' => 'Outdoor Play', 'image' => 'gallery-3.jpg'),
-                    array('category' => 'events', 'title' => 'Christmas Celebration', 'image' => 'gallery-4.jpg'),
-                    array('category' => 'learning', 'title' => 'Art & Craft Session', 'image' => 'gallery-5.jpg'),
-                    array('category' => 'community', 'title' => 'Community Gathering', 'image' => 'gallery-6.jpg'),
-                    array('category' => 'activities', 'title' => 'Building with LEGO', 'image' => 'gallery-7.jpg'),
-                    array('category' => 'learning', 'title' => 'Library Time', 'image' => 'gallery-8.jpg'),
-                    array('category' => 'events', 'title' => 'Birthday Party', 'image' => 'gallery-9.jpg'),
-                    array('category' => 'activities', 'title' => 'Playing Football', 'image' => 'gallery-10.jpg'),
-                    array('category' => 'community', 'title' => 'Volunteer Team', 'image' => 'gallery-11.jpg'),
-                    array('category' => 'learning', 'title' => 'Music Time', 'image' => 'gallery-12.jpg'),
-                );
+                // Query Gallery Items CPT
+                $gallery_query = new WP_Query( array(
+                    'post_type'      => 'gallery_item',
+                    'posts_per_page' => -1,
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                ) );
 
-                foreach ($gallery_items as $index => $item) :
-                    $delay = ($index % 8) * 0.05;
+                if ( $gallery_query->have_posts() ) :
+                    $index = 0;
+                    while ( $gallery_query->have_posts() ) : $gallery_query->the_post();
+                        $index++;
+                        $delay = ($index % 8) * 0.05;
+                        
+                        // Get categories
+                        $categories = get_the_terms( get_the_ID(), 'gallery_category' );
+                        $category_slug = '';
+                        $category_name = '';
+                        if ( $categories && ! is_wp_error( $categories ) ) {
+                            $category_slug = $categories[0]->slug;
+                            $category_name = $categories[0]->name;
+                        }
                 ?>
-                
+                <!-- Item: <?php the_title(); ?> | Category: <?php echo $category_slug ? $category_slug : 'none'; ?> -->
                 <div class="gallery-item animate-on-scroll cursor-pointer group" 
-                     data-category="<?php echo esc_attr($item['category']); ?>"
-                     style="animation-delay: <?php echo esc_attr($delay); ?>s;"
-                     data-image="<?php echo esc_url( get_template_directory_uri() . '/assets/images/' . $item['image'] ); ?>"
-                     data-title="<?php echo esc_attr($item['title']); ?>">
+                     data-category="<?php echo esc_attr( $category_slug ); ?>"
+                     style="animation-delay: <?php echo esc_attr( $delay ); ?>s;"
+                     data-image="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'large' ) ); ?>"
+                     data-title="<?php echo esc_attr( get_the_title() ); ?>">
                     
                     <div class="relative aspect-square rounded-3xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300">
                         
-                        <!-- Placeholder Image with gradient background -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-bright-yellow/20 via-soft-coral/20 to-sky-blue/20 flex items-center justify-center">
-                            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        
-                        <!-- Actual image would be loaded here -->
-                        <!-- <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/' . $item['image'] ); ?>" 
-                             alt="<?php echo esc_attr($item['title']); ?>"
-                             class="absolute inset-0 w-full h-full object-cover"> -->
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <!-- Gallery Image -->
+                            <?php the_post_thumbnail( 'medium_large', array( 
+                                'class' => 'absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
+                            ) ); ?>
+                        <?php else : ?>
+                            <!-- Placeholder -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-bright-yellow/20 via-soft-coral/20 to-sky-blue/20 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        <?php endif; ?>
                         
                         <!-- Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-deep-blue/80 via-deep-blue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                             <div class="text-white">
-                                <h3 class="font-fredoka font-bold text-lg mb-2"><?php echo esc_html($item['title']); ?></h3>
+                                <h3 class="font-fredoka font-bold text-lg mb-2"><?php the_title(); ?></h3>
+                                <?php if ( $category_name ) : ?>
                                 <span class="inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-nunito">
-                                    <?php echo ucfirst($item['category']); ?>
+                                    <?php echo esc_html( $category_name ); ?>
                                 </span>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -118,11 +131,32 @@ get_header();
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
                             </svg>
                         </div>
-
                     </div>
                 </div>
 
-                <?php endforeach; ?>
+                <?php 
+                    endwhile;
+                    wp_reset_postdata();
+                else : 
+                ?>
+                
+                <!-- Empty State -->
+                <div class="col-span-full text-center py-20">
+                    <div class="max-w-md mx-auto">
+                        <svg class="w-24 h-24 text-gray-300 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <h3 class="font-fredoka font-bold text-2xl text-deep-blue mb-3">No Gallery Items Yet</h3>
+                        <p class="font-nunito text-gray-600 mb-6">Start adding photos to showcase your amazing work!</p>
+                        <?php if ( current_user_can( 'edit_posts' ) ) : ?>
+                        <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=gallery_item' ) ); ?>" class="btn btn-primary">
+                            Add Your First Gallery Item
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <?php endif; ?>
 
             </div>
 
@@ -277,15 +311,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updateVisibleItems();
         currentImageIndex = index;
         const item = visibleItems[index];
+        const imageUrl = item.dataset.image;
         const title = item.dataset.title;
+        
+        // Load the image
+        if (imageUrl) {
+            lightboxImage.innerHTML = `<img src="${imageUrl}" alt="${title}" class="w-full h-full object-contain rounded-2xl">`;
+        } else {
+            // Fallback placeholder
+            lightboxImage.innerHTML = `
+                <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            `;
+        }
         
         lightboxTitle.querySelector('h3').textContent = title;
         lightboxModal.classList.remove('hidden');
         lightboxModal.classList.add('flex');
         document.body.style.overflow = 'hidden';
-        
-        // In production, you would load the actual image here
-        // lightboxImage.innerHTML = `<img src="${item.dataset.image}" alt="${title}" class="max-w-full max-h-full object-contain rounded-2xl">`;
     }
 
     function closeLightboxModal() {

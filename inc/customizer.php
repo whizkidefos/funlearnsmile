@@ -128,6 +128,60 @@ function funlearnsmile_customize_register( $wp_customize ) {
         'type'        => 'url',
     ) );
 
+    // PayPal Section
+    $wp_customize->add_section( 'funlearnsmile_paypal', array(
+        'title'    => __( 'PayPal Settings', 'funlearnsmile' ),
+        'panel'    => 'funlearnsmile_options',
+        'priority' => 30,
+    ) );
+
+    // PayPal Client ID
+    $wp_customize->add_setting( 'paypal_client_id', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'paypal_client_id', array(
+        'label'       => __( 'PayPal Client ID', 'funlearnsmile' ),
+        'description' => __( 'Enter your PayPal Client ID. Get it from developer.paypal.com', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_paypal',
+        'type'        => 'text',
+    ) );
+
+    // PayPal Mode
+    $wp_customize->add_setting( 'paypal_mode', array(
+        'default'           => 'live',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'paypal_mode', array(
+        'label'       => __( 'PayPal Mode', 'funlearnsmile' ),
+        'description' => __( 'Use sandbox for testing, live for production', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_paypal',
+        'type'        => 'select',
+        'choices'     => array(
+            'sandbox' => __( 'Sandbox (Testing)', 'funlearnsmile' ),
+            'live'    => __( 'Live (Production)', 'funlearnsmile' ),
+        ),
+    ) );
+
+    // PayPal Currency
+    $wp_customize->add_setting( 'paypal_currency', array(
+        'default'           => 'GBP',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'paypal_currency', array(
+        'label'       => __( 'Currency', 'funlearnsmile' ),
+        'section'     => 'funlearnsmile_paypal',
+        'type'        => 'select',
+        'choices'     => array(
+            'GBP' => __( 'British Pound (£)', 'funlearnsmile' ),
+            'USD' => __( 'US Dollar ($)', 'funlearnsmile' ),
+            'EUR' => __( 'Euro (€)', 'funlearnsmile' ),
+        ),
+    ) );
+
     // Social Media Section
     $wp_customize->add_section( 'funlearnsmile_social', array(
         'title'    => __( 'Social Media', 'funlearnsmile' ),

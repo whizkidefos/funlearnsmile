@@ -377,6 +377,20 @@ document.addEventListener('DOMContentLoaded', function() {
     </p>
 </div>
 <?php endif; ?>
+        },
+        onError: function(err) {
+            console.error('PayPal Error:', err);
+            alert('An error occurred with your donation. Please try again or contact us for assistance.');
+        },
+        style: {
+            shape: 'pill',
+            color: 'blue',
+            layout: 'vertical',
+            label: 'donate'
+        }
+    }).render('#paypal-button-container');
+});
+</script>
 
 <?php
 get_footer();

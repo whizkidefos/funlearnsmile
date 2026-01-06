@@ -40,12 +40,6 @@ get_header();
 
                     <!-- Post Meta -->
                     <div class="post-meta flex flex-wrap items-center justify-center gap-6 text-gray-600 font-nunito">
-                        
-                        <!-- Author with Avatar -->
-                        <span class="flex items-center space-x-2">
-                            <?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', '', array( 'class' => 'rounded-full' ) ); ?>
-                            <span><?php echo esc_html( get_the_author() ); ?></span>
-                        </span>
 
                         <!-- Date -->
                         <span class="flex items-center space-x-2">

@@ -49,15 +49,37 @@ get_header();
                         
                         <!-- Post Thumbnail -->
                         <?php if ( has_post_thumbnail() ) : ?>
-                            <a href="<?php the_permalink(); ?>" class="block overflow-hidden">
+                            <a href="<?php the_permalink(); ?>" class="block overflow-hidden rounded-t-2xl">
                                 <?php the_post_thumbnail( 'medium', array( 'class' => 'w-full h-56 object-cover transition-transform duration-300 hover:scale-110' ) ); ?>
                             </a>
                         <?php else : ?>
-                            <a href="<?php the_permalink(); ?>" class="block overflow-hidden">
-                                <div class="w-full h-56 bg-gradient-to-br from-bright-yellow/20 to-soft-coral/20 flex items-center justify-center">
-                                    <svg class="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
+                            <a href="<?php the_permalink(); ?>" class="block overflow-hidden rounded-t-2xl group">
+                                <div class="w-full h-56 bg-gradient-to-br from-sky-blue/20 via-grass-green/20 to-bright-yellow/20 flex items-center justify-center relative overflow-hidden">
+                                    <!-- Pattern Background -->
+                                    <div class="absolute inset-0 opacity-10">
+                                        <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                            <defs>
+                                                <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                                                    <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                                                </pattern>
+                                            </defs>
+                                            <rect x="0" y="0" width="100%" height="100%" fill="url(#dots)"/>
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Logo Icon -->
+                                    <div class="relative z-10 flex flex-col items-center space-y-4">
+                                        <div class="w-20 h-20 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <svg class="w-12 h-12 text-sky-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="font-fredoka font-semibold text-deep-blue/60 text-sm">FunLearnSmile</span>
+                                    </div>
+
+                                    <!-- Decorative Shapes -->
+                                    <div class="absolute top-4 right-4 w-8 h-8 bg-soft-coral/20 rounded-full animate-pulse"></div>
+                                    <div class="absolute bottom-4 left-4 w-6 h-6 bg-grass-green/20 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
                                 </div>
                             </a>
                         <?php endif; ?>
