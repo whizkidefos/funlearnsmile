@@ -49,7 +49,7 @@ get_header();
                 if ( ! empty( $gallery_categories ) && ! is_wp_error( $gallery_categories ) ) :
                     foreach ( $gallery_categories as $category ) :
                 ?>
-                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="<?php echo esc_attr( $category->slug ); ?>">
+                <button class="gallery-filter-btn px-6 py-3 rounded-full font-fredoka font-semibold transition-all duration-300" data-filter="<?php echo esc_attr( strtolower( $category->slug ) ); ?>">
                     <?php echo esc_html( $category->name ); ?>
                 </button>
                 <?php 
@@ -83,14 +83,15 @@ get_header();
                         
                         // Get categories
                         $categories = get_the_terms( get_the_ID(), 'gallery_category' );
-                        $category_slug = '';
-                        $category_name = '';
-                        if ( $categories && ! is_wp_error( $categories ) ) {
-                            $category_slug = $categories[0]->slug;
+                        $category_slug = 'uncategorized'; // Default fallback
+                        $category_name = 'Uncategorized';
+                        
+                        if ( $categories && ! is_wp_error( $categories ) && ! empty( $categories ) ) {
+                            $category_slug = strtolower( $categories[0]->slug );
                             $category_name = $categories[0]->name;
                         }
                 ?>
-                <!-- Item: <?php the_title(); ?> | Category: <?php echo $category_slug ? $category_slug : 'none'; ?> -->
+                <!-- Item: <?php the_title(); ?> | Category: <?php echo $category_slug; ?> -->
                 <div class="gallery-item animate-on-scroll cursor-pointer group" 
                      data-category="<?php echo esc_attr( $category_slug ); ?>"
                      style="animation-delay: <?php echo esc_attr( $delay ); ?>s;"
@@ -276,7 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Filter functionality
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            const filter = this.dataset.filter;
+            const filter = this.dataset.filter.toLowerCase().trim();
+            console.log('=== FILTER CLICKED ===');
+            console.log('Filter:', filter);
             
             // Update active button
             filterBtns.forEach(b => b.classList.remove('active'));
@@ -284,14 +287,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Filter gallery items
             let visibleCount = 0;
-            galleryItems.forEach(item => {
-                if (filter === 'all' || item.dataset.category === filter) {
+            galleryItems.forEach((item, index) => {
+                const itemCategory = (item.dataset.category || '').toLowerCase().trim();
+                const itemTitle = item.dataset.title;
+                
+                console.log(`Item ${index + 1}: "${itemTitle}" | Category: "${itemCategory}" | Match: ${itemCategory === filter || filter === 'all'}`);
+                
+                if (filter === 'all') {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else if (itemCategory && itemCategory === filter) {
                     item.classList.remove('hidden');
                     visibleCount++;
                 } else {
                     item.classList.add('hidden');
                 }
             });
+            
+            console.log('Visible items:', visibleCount);
+            console.log('===================');
             
             // Show/hide no results message
             if (visibleCount === 0) {

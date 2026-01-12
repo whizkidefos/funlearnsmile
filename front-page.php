@@ -35,7 +35,7 @@ get_header();
                     <span class="text-gradient-playful">favourite way of learning</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-gray-700 font-nunito mb-8 leading-relaxed">
-                    We bring joyful, play-based education to disadvantaged children around the world.
+                    We bring joyful, play-based education to disadvantaged children across Ghana.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="<?php echo esc_url( home_url( '/donate' ) ); ?>" class="btn btn-primary">
@@ -214,7 +214,7 @@ get_header();
                     <span class="text-bright-yellow text-4xl font-fredoka">+</span>
                 </div>
                 <p class="text-xl font-nunito text-white/90">
-                    <?php esc_html_e( 'Countries Reached', 'funlearnsmile' ); ?>
+                    <?php esc_html_e( 'Communities Reached', 'funlearnsmile' ); ?>
                 </p>
             </div>
 

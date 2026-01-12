@@ -816,3 +816,349 @@ function funlearnsmile_gallery_column_content( $column_name, $post_id ) {
     }
 }
 add_action( 'manage_gallery_item_posts_custom_column', 'funlearnsmile_gallery_column_content', 10, 2 );
+
+/**
+ * Register Annual Reports Custom Post Type
+ */
+function funlearnsmile_register_reports_cpt() {
+    $labels = array(
+        'name'                  => _x( 'Annual Reports', 'Post Type General Name', 'funlearnsmile' ),
+        'singular_name'         => _x( 'Annual Report', 'Post Type Singular Name', 'funlearnsmile' ),
+        'menu_name'             => __( 'Annual Reports', 'funlearnsmile' ),
+        'name_admin_bar'        => __( 'Annual Report', 'funlearnsmile' ),
+        'archives'              => __( 'Report Archives', 'funlearnsmile' ),
+        'attributes'            => __( 'Report Attributes', 'funlearnsmile' ),
+        'all_items'             => __( 'All Reports', 'funlearnsmile' ),
+        'add_new_item'          => __( 'Add New Report', 'funlearnsmile' ),
+        'add_new'               => __( 'Add New', 'funlearnsmile' ),
+        'new_item'              => __( 'New Report', 'funlearnsmile' ),
+        'edit_item'             => __( 'Edit Report', 'funlearnsmile' ),
+        'update_item'           => __( 'Update Report', 'funlearnsmile' ),
+        'view_item'             => __( 'View Report', 'funlearnsmile' ),
+        'view_items'            => __( 'View Reports', 'funlearnsmile' ),
+        'search_items'          => __( 'Search Reports', 'funlearnsmile' ),
+        'not_found'             => __( 'Not found', 'funlearnsmile' ),
+        'not_found_in_trash'    => __( 'Not found in Trash', 'funlearnsmile' ),
+    );
+
+    $args = array(
+        'label'                 => __( 'Annual Report', 'funlearnsmile' ),
+        'description'           => __( 'Annual reports and documents', 'funlearnsmile' ),
+        'labels'                => $labels,
+        'supports'              => array( 'title', 'editor', 'thumbnail' ),
+        'hierarchical'          => false,
+        'public'                => false,
+        'show_ui'               => true,
+        'show_in_menu'          => true,
+        'menu_position'         => 26,
+        'menu_icon'             => 'dashicons-media-document',
+        'show_in_admin_bar'     => true,
+        'show_in_nav_menus'     => false,
+        'can_export'            => true,
+        'has_archive'           => false,
+        'exclude_from_search'   => true,
+        'publicly_queryable'    => false,
+        'capability_type'       => 'post',
+        'show_in_rest'          => true,
+    );
+
+    register_post_type( 'annual_report', $args );
+}
+add_action( 'init', 'funlearnsmile_register_reports_cpt', 0 );
+
+/**
+ * Add Report Year and PDF Meta Boxes
+ */
+function funlearnsmile_report_meta_boxes() {
+    add_meta_box(
+        'report_details',
+        __( 'Report Details', 'funlearnsmile' ),
+        'funlearnsmile_report_details_callback',
+        'annual_report',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'funlearnsmile_report_meta_boxes' );
+
+/**
+ * Report Details Meta Box Callback
+ */
+function funlearnsmile_report_details_callback( $post ) {
+    wp_nonce_field( 'funlearnsmile_report_details', 'funlearnsmile_report_nonce' );
+    
+    $year = get_post_meta( $post->ID, '_report_year', true );
+    $pdf_url = get_post_meta( $post->ID, '_report_pdf_url', true );
+    ?>
+    <table class="form-table">
+        <tr>
+            <th><label for="report_year"><?php _e( 'Report Year', 'funlearnsmile' ); ?></label></th>
+            <td>
+                <input type="text" id="report_year" name="report_year" value="<?php echo esc_attr( $year ); ?>" class="regular-text" placeholder="e.g., 2023/24 or 2024">
+                <p class="description"><?php _e( 'Enter the year or year range (e.g., "2023/24" or "2024")', 'funlearnsmile' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="report_pdf_url"><?php _e( 'PDF File', 'funlearnsmile' ); ?></label></th>
+            <td>
+                <input type="url" id="report_pdf_url" name="report_pdf_url" value="<?php echo esc_url( $pdf_url ); ?>" class="regular-text" placeholder="https://yoursite.com/path/to/report.pdf">
+                <button type="button" class="button upload-pdf-button"><?php _e( 'Upload PDF', 'funlearnsmile' ); ?></button>
+                <p class="description"><?php _e( 'Upload or enter the URL for the PDF report', 'funlearnsmile' ); ?></p>
+                <?php if ( $pdf_url ) : ?>
+                    <p><a href="<?php echo esc_url( $pdf_url ); ?>" target="_blank" class="button button-secondary"><?php _e( 'View PDF', 'funlearnsmile' ); ?></a></p>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        var mediaUploader;
+        
+        $('.upload-pdf-button').on('click', function(e) {
+            e.preventDefault();
+            
+            if (mediaUploader) {
+                mediaUploader.open();
+                return;
+            }
+            
+            mediaUploader = wp.media({
+                title: '<?php _e( 'Choose PDF File', 'funlearnsmile' ); ?>',
+                button: {
+                    text: '<?php _e( 'Use this PDF', 'funlearnsmile' ); ?>'
+                },
+                library: {
+                    type: 'application/pdf'
+                },
+                multiple: false
+            });
+            
+            mediaUploader.on('select', function() {
+                var attachment = mediaUploader.state().get('selection').first().toJSON();
+                $('#report_pdf_url').val(attachment.url);
+            });
+            
+            mediaUploader.open();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Save Report Meta Data
+ */
+function funlearnsmile_save_report_meta( $post_id ) {
+    if ( ! isset( $_POST['funlearnsmile_report_nonce'] ) || ! wp_verify_nonce( $_POST['funlearnsmile_report_nonce'], 'funlearnsmile_report_details' ) ) {
+        return;
+    }
+
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    if ( isset( $_POST['report_year'] ) ) {
+        update_post_meta( $post_id, '_report_year', sanitize_text_field( $_POST['report_year'] ) );
+    }
+
+    if ( isset( $_POST['report_pdf_url'] ) ) {
+        update_post_meta( $post_id, '_report_pdf_url', esc_url_raw( $_POST['report_pdf_url'] ) );
+    }
+}
+add_action( 'save_post_annual_report', 'funlearnsmile_save_report_meta' );
+
+/**
+ * Customize Annual Reports Admin Columns
+ */
+function funlearnsmile_reports_columns( $columns ) {
+    $new_columns = array();
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['title'] = $columns['title'];
+    $new_columns['year'] = __( 'Year', 'funlearnsmile' );
+    $new_columns['pdf'] = __( 'PDF', 'funlearnsmile' );
+    $new_columns['date'] = $columns['date'];
+    return $new_columns;
+}
+add_filter( 'manage_annual_report_posts_columns', 'funlearnsmile_reports_columns' );
+
+/**
+ * Display Report Columns Content
+ */
+function funlearnsmile_reports_column_content( $column_name, $post_id ) {
+    if ( $column_name === 'year' ) {
+        $year = get_post_meta( $post_id, '_report_year', true );
+        echo $year ? esc_html( $year ) : '—';
+    }
+    
+    if ( $column_name === 'pdf' ) {
+        $pdf_url = get_post_meta( $post_id, '_report_pdf_url', true );
+        if ( $pdf_url ) {
+            echo '<a href="' . esc_url( $pdf_url ) . '" target="_blank" class="button button-small">View PDF</a>';
+        } else {
+            echo '<span style="color: #999;">No PDF</span>';
+        }
+    }
+}
+add_action( 'manage_annual_report_posts_custom_column', 'funlearnsmile_reports_column_content', 10, 2 );
+
+/**
+ * Register Testimonials Custom Post Type
+ */
+function funlearnsmile_register_testimonials_cpt() {
+    $labels = array(
+        'name'                  => _x( 'Testimonials', 'Post Type General Name', 'funlearnsmile' ),
+        'singular_name'         => _x( 'Testimonial', 'Post Type Singular Name', 'funlearnsmile' ),
+        'menu_name'             => __( 'Testimonials', 'funlearnsmile' ),
+        'name_admin_bar'        => __( 'Testimonial', 'funlearnsmile' ),
+        'all_items'             => __( 'All Testimonials', 'funlearnsmile' ),
+        'add_new_item'          => __( 'Add New Testimonial', 'funlearnsmile' ),
+        'add_new'               => __( 'Add New', 'funlearnsmile' ),
+        'new_item'              => __( 'New Testimonial', 'funlearnsmile' ),
+        'edit_item'             => __( 'Edit Testimonial', 'funlearnsmile' ),
+        'update_item'           => __( 'Update Testimonial', 'funlearnsmile' ),
+        'view_item'             => __( 'View Testimonial', 'funlearnsmile' ),
+        'search_items'          => __( 'Search Testimonials', 'funlearnsmile' ),
+        'not_found'             => __( 'Not found', 'funlearnsmile' ),
+        'not_found_in_trash'    => __( 'Not found in Trash', 'funlearnsmile' ),
+    );
+
+    $args = array(
+        'label'                 => __( 'Testimonial', 'funlearnsmile' ),
+        'description'           => __( 'Volunteer testimonials and reviews', 'funlearnsmile' ),
+        'labels'                => $labels,
+        'supports'              => array( 'title', 'editor', 'thumbnail' ),
+        'hierarchical'          => false,
+        'public'                => false,
+        'show_ui'               => true,
+        'show_in_menu'          => true,
+        'menu_position'         => 27,
+        'menu_icon'             => 'dashicons-testimonial',
+        'show_in_admin_bar'     => true,
+        'show_in_nav_menus'     => false,
+        'can_export'            => true,
+        'has_archive'           => false,
+        'exclude_from_search'   => true,
+        'publicly_queryable'    => false,
+        'capability_type'       => 'post',
+        'show_in_rest'          => true,
+    );
+
+    register_post_type( 'testimonial', $args );
+}
+add_action( 'init', 'funlearnsmile_register_testimonials_cpt', 0 );
+
+/**
+ * Add Testimonial Meta Boxes
+ */
+function funlearnsmile_testimonial_meta_boxes() {
+    add_meta_box(
+        'testimonial_details',
+        __( 'Testimonial Details', 'funlearnsmile' ),
+        'funlearnsmile_testimonial_details_callback',
+        'testimonial',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'funlearnsmile_testimonial_meta_boxes' );
+
+/**
+ * Testimonial Details Meta Box Callback
+ */
+function funlearnsmile_testimonial_details_callback( $post ) {
+    wp_nonce_field( 'funlearnsmile_testimonial_details', 'funlearnsmile_testimonial_nonce' );
+    
+    $person_name = get_post_meta( $post->ID, '_testimonial_person_name', true );
+    $person_role = get_post_meta( $post->ID, '_testimonial_person_role', true );
+    ?>
+    <table class="form-table">
+        <tr>
+            <th><label for="testimonial_person_name"><?php _e( 'Person Name', 'funlearnsmile' ); ?></label></th>
+            <td>
+                <input type="text" id="testimonial_person_name" name="testimonial_person_name" value="<?php echo esc_attr( $person_name ); ?>" class="regular-text" placeholder="e.g., Sarah Johnson">
+                <p class="description"><?php _e( 'Name of the volunteer giving the testimonial', 'funlearnsmile' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="testimonial_person_role"><?php _e( 'Role/Title', 'funlearnsmile' ); ?></label></th>
+            <td>
+                <input type="text" id="testimonial_person_role" name="testimonial_person_role" value="<?php echo esc_attr( $person_role ); ?>" class="regular-text" placeholder="e.g., Volunteer Teacher">
+                <p class="description"><?php _e( 'Their role or title (e.g., "Volunteer", "Program Assistant")', 'funlearnsmile' ); ?></p>
+            </td>
+        </tr>
+    </table>
+    <p><strong><?php _e( 'Instructions:', 'funlearnsmile' ); ?></strong></p>
+    <ul style="list-style: disc; margin-left: 20px;">
+        <li><?php _e( 'Title: Use as a short heading or leave blank', 'funlearnsmile' ); ?></li>
+        <li><?php _e( 'Content: Enter the testimonial text in the editor above', 'funlearnsmile' ); ?></li>
+        <li><?php _e( 'Featured Image: Upload a photo of the volunteer (optional)', 'funlearnsmile' ); ?></li>
+    </ul>
+    <?php
+}
+
+/**
+ * Save Testimonial Meta Data
+ */
+function funlearnsmile_save_testimonial_meta( $post_id ) {
+    if ( ! isset( $_POST['funlearnsmile_testimonial_nonce'] ) || ! wp_verify_nonce( $_POST['funlearnsmile_testimonial_nonce'], 'funlearnsmile_testimonial_details' ) ) {
+        return;
+    }
+
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    if ( isset( $_POST['testimonial_person_name'] ) ) {
+        update_post_meta( $post_id, '_testimonial_person_name', sanitize_text_field( $_POST['testimonial_person_name'] ) );
+    }
+
+    if ( isset( $_POST['testimonial_person_role'] ) ) {
+        update_post_meta( $post_id, '_testimonial_person_role', sanitize_text_field( $_POST['testimonial_person_role'] ) );
+    }
+}
+add_action( 'save_post_testimonial', 'funlearnsmile_save_testimonial_meta' );
+
+/**
+ * Customize Testimonials Admin Columns
+ */
+function funlearnsmile_testimonials_columns( $columns ) {
+    $new_columns = array();
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['image'] = __( 'Photo', 'funlearnsmile' );
+    $new_columns['title'] = $columns['title'];
+    $new_columns['person_name'] = __( 'Person Name', 'funlearnsmile' );
+    $new_columns['person_role'] = __( 'Role', 'funlearnsmile' );
+    $new_columns['date'] = $columns['date'];
+    return $new_columns;
+}
+add_filter( 'manage_testimonial_posts_columns', 'funlearnsmile_testimonials_columns' );
+
+/**
+ * Display Testimonials Column Content
+ */
+function funlearnsmile_testimonials_column_content( $column_name, $post_id ) {
+    if ( $column_name === 'image' ) {
+        $thumbnail = get_the_post_thumbnail( $post_id, array( 60, 60 ), array( 'style' => 'border-radius: 50%;' ) );
+        echo $thumbnail ? $thumbnail : '<span style="color: #999;">No photo</span>';
+    }
+    
+    if ( $column_name === 'person_name' ) {
+        $name = get_post_meta( $post_id, '_testimonial_person_name', true );
+        echo $name ? '<strong>' . esc_html( $name ) . '</strong>' : '—';
+    }
+    
+    if ( $column_name === 'person_role' ) {
+        $role = get_post_meta( $post_id, '_testimonial_person_role', true );
+        echo $role ? esc_html( $role ) : '—';
+    }
+}
+add_action( 'manage_testimonial_posts_custom_column', 'funlearnsmile_testimonials_column_content', 10, 2 );

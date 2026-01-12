@@ -422,29 +422,80 @@ get_header();
                 </h2>
             </div>
 
+            <?php
+            // Query Testimonials
+            $testimonials_query = new WP_Query( array(
+                'post_type'      => 'testimonial',
+                'posts_per_page' => 6,
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+            ) );
+
+            if ( $testimonials_query->have_posts() ) :
+            ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <?php 
+                $delay = 0.1;
+                $colors = array( 'soft-coral', 'sky-blue', 'grass-green', 'bright-yellow' );
+                $color_index = 0;
                 
-                <div class="card-playful p-8 animate-on-scroll" style="animation-delay: 0.1s;">
-                    <svg class="w-12 h-12 text-soft-coral/20 mb-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
-                    </svg>
+                while ( $testimonials_query->have_posts() ) : $testimonials_query->the_post();
+                    $person_name = get_post_meta( get_the_ID(), '_testimonial_person_name', true );
+                    $person_role = get_post_meta( get_the_ID(), '_testimonial_person_role', true );
+                    $color = $colors[ $color_index % count( $colors ) ];
+                ?>
+                
+                <div class="card-playful p-8 animate-on-scroll" style="animation-delay: <?php echo esc_attr( $delay ); ?>s;">
+                    <?php if ( has_post_thumbnail() ) : ?>
+                        <div class="mb-6 flex justify-center">
+                            <?php the_post_thumbnail( 'thumbnail', array( 'class' => 'w-20 h-20 rounded-full object-cover shadow-lg' ) ); ?>
+                        </div>
+                    <?php else : ?>
+                        <svg class="w-12 h-12 text-<?php echo esc_attr( $color ); ?>/20 mb-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+                        </svg>
+                    <?php endif; ?>
+                    
+                    <?php if ( get_the_title() ) : ?>
+                        <h3 class="font-fredoka font-bold text-xl text-deep-blue mb-4"><?php the_title(); ?></h3>
+                    <?php endif; ?>
+                    
                     <blockquote class="text-lg text-gray-800 font-nunito italic mb-6 leading-relaxed">
-                        "Volunteering with FunLearn Smile has been one of the most rewarding experiences of my life. Seeing the children's faces light up when they learn something new is priceless."
+                        <?php the_content(); ?>
                     </blockquote>
-                    <cite class="font-fredoka font-semibold text-lg text-deep-blue">— Sarah, Volunteer since 2022</cite>
+                    
+                    <cite class="font-fredoka font-semibold text-lg text-deep-blue not-italic">
+                        <?php 
+                        if ( $person_name ) {
+                            echo '— ' . esc_html( $person_name );
+                            if ( $person_role ) {
+                                echo ', ' . esc_html( $person_role );
+                            }
+                        }
+                        ?>
+                    </cite>
                 </div>
 
-                <div class="card-playful p-8 animate-on-scroll" style="animation-delay: 0.2s;">
-                    <svg class="w-12 h-12 text-sky-blue/20 mb-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
-                    </svg>
-                    <blockquote class="text-lg text-gray-800 font-nunito italic mb-6 leading-relaxed">
-                        "This organization doesn't just provide resources—it creates a space where children can be children, learn through play, and develop essential life skills."
-                    </blockquote>
-                    <cite class="font-fredoka font-semibold text-lg text-deep-blue">— John, Volunteer Coordinator</cite>
-                </div>
-
+                <?php 
+                    $delay += 0.1;
+                    $color_index++;
+                endwhile;
+                wp_reset_postdata();
+                ?>
             </div>
+            <?php else : ?>
+            
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <p class="text-gray-600 font-nunito text-lg mb-4">No testimonials yet.</p>
+                <?php if ( current_user_can( 'edit_posts' ) ) : ?>
+                <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=testimonial' ) ); ?>" class="btn btn-primary">
+                    Add First Testimonial
+                </a>
+                <?php endif; ?>
+            </div>
+            
+            <?php endif; ?>
 
         </div>
     </section>

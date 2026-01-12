@@ -275,15 +275,57 @@ get_header();
                     See Our Impact
                 </h2>
                 <p class="text-xl mb-8 text-white/90">
-                    Download our annual report to learn more about the children we've supported and the activities we've provided.
+                    Download our annual reports to learn more about the children we've supported and the activities we've provided.
                 </p>
-                <a href="<?php echo esc_url( home_url( '/reports/annual-report-2023-24.pdf' ) ); ?>" 
-                   class="inline-flex items-center space-x-3 bg-white text-deep-blue px-8 py-4 rounded-full font-fredoka font-semibold text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <span>2023/24 Annual Report</span>
-                </a>
+                
+                <?php
+                // Query Annual Reports
+                $reports_query = new WP_Query( array(
+                    'post_type'      => 'annual_report',
+                    'posts_per_page' => 5,
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                ) );
+
+                if ( $reports_query->have_posts() ) :
+                    ?>
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <?php while ( $reports_query->have_posts() ) : $reports_query->the_post();
+                            $year = get_post_meta( get_the_ID(), '_report_year', true );
+                            $pdf_url = get_post_meta( get_the_ID(), '_report_pdf_url', true );
+                            
+                            if ( $pdf_url ) :
+                        ?>
+                        <a href="<?php echo esc_url( $pdf_url ); ?>" 
+                           target="_blank"
+                           class="inline-flex items-center space-x-3 bg-white text-deep-blue px-8 py-4 rounded-full font-fredoka font-semibold text-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>
+                                <?php 
+                                if ( $year ) {
+                                    echo esc_html( $year ) . ' Annual Report';
+                                } else {
+                                    the_title();
+                                }
+                                ?>
+                            </span>
+                        </a>
+                        <?php 
+                            endif;
+                        endwhile;
+                        wp_reset_postdata();
+                        ?>
+                    </div>
+                <?php else : ?>
+                    <p class="text-white/80 font-nunito">
+                        No annual reports available at the moment.
+                        <?php if ( current_user_can( 'edit_posts' ) ) : ?>
+                        <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=annual_report' ) ); ?>" class="underline hover:text-white">Add one now</a>
+                        <?php endif; ?>
+                    </p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
