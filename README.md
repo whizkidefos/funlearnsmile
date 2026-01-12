@@ -1,6 +1,6 @@
 # FunLearn Smile WordPress Theme
 
-A vibrant, playful, and modern WordPress theme designed for FunLearn Smile - a charity dedicated to bringing joyful, play-based education to disadvantaged children around the world.
+A vibrant, playful, and modern WordPress theme designed for FunLearn Smile - a charity dedicated to bringing joyful, play-based education to disadvantaged children across Ghana.
 
 ## 🎨 Theme Features
 
@@ -9,7 +9,9 @@ A vibrant, playful, and modern WordPress theme designed for FunLearn Smile - a c
 - **Fast Performance**: Optimized for speed with clean code and minimal dependencies
 - **Accessible**: WCAG compliant with proper semantic HTML and ARIA labels
 - **SEO Optimized**: Built-in schema markup and SEO best practices
-- **Customizable**: Easy customization through WordPress Customizer
+- **Custom Post Types**: Gallery Items, Annual Reports, and Testimonials
+- **PayPal Integration**: Complete donation system with tracking
+- **Customizable**: Extensive customization through WordPress Customizer
 - **Animation Library**: Smooth scroll animations and playful micro-interactions
 
 ## 🎨 Color Palette
@@ -26,6 +28,7 @@ A vibrant, playful, and modern WordPress theme designed for FunLearn Smile - a c
 
 - WordPress 5.8 or higher
 - PHP 7.4 or higher
+- MySQL 5.7 or higher
 - Node.js 16+ and npm (for development)
 
 ### Step 1: Upload Theme
@@ -56,25 +59,13 @@ npm run dev
 npm run build
 ```
 
-**Important**: After running the build command, update `functions.php` to load the compiled CSS:
-
-Change this line:
-```php
-wp_enqueue_style( 'funlearnsmile-main', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
-```
-
-To:
-```php
-wp_enqueue_style( 'funlearnsmile-main', get_template_directory_uri() . '/assets/css/output.css', array(), '1.0.0' );
-```
-
 ## 🎯 Initial Setup
 
 ### 1. Set Up Menus
 
 1. Go to Appearance → Menus
 2. Create a new menu called "Primary Menu"
-3. Add pages: Home, About Us, Our Work, Blog, Contact, Donate
+3. Add pages: Home, About, Our Work, Gallery, Blog, Get Involved, Donate
 4. Assign to "Primary Menu" location
 5. Create another menu for "Footer Menu" (optional)
 
@@ -95,53 +86,161 @@ wp_enqueue_style( 'funlearnsmile-main', get_template_directory_uri() . '/assets/
 
 Navigate to Appearance → Customize → FunLearn Smile Options:
 
-- **Theme Colors**: Adjust primary and secondary colors
-- **Footer Settings**: Add custom copyright text
-- **Social Media**: Add Instagram, Facebook, Twitter URLs
-- **Contact Information**: Add email, phone, and address
+#### Contact Information
+- Email address
+- Phone number
+- Physical address
+- WhatsApp number
+- WhatsApp welcome message
 
-### 5. Set Up Widgets
+#### Social Media
+- Instagram URL
+- Facebook URL
+- Twitter URL
+- LinkedIn URL
 
-1. Go to Appearance → Widgets
-2. Add widgets to Footer Widget Area 1, 2, and 3
-3. Recommended widgets:
-   - About text widget
-   - Recent posts
-   - Categories
-   - Custom HTML for social links
+#### Footer Settings
+- Custom copyright text
+- Footer description
+- Credit link URL (for "Built with ❤️ in Manchester")
 
-## 📁 File Structure
+#### PayPal Settings
+- PayPal Client ID
+- Payment mode (Sandbox/Live)
+- Currency (GBP/USD/EUR)
 
-```
-funlearnsmile-theme/
-├── assets/
-│   ├── css/
-│   │   ├── main.css (source)
-│   │   └── output.css (compiled - gitignored)
-│   ├── js/
-│   │   ├── main.js
-│   │   └── customizer.js
-│   └── images/
-│       ├── icon.png
-│       └── logo.png
-├── inc/
-│   ├── customizer.php
-│   └── template-functions.php
-├── template-parts/
-│   └── (template part files)
-├── 404.php
-├── footer.php
-├── front-page.php
-├── functions.php
-├── header.php
-├── index.php
-├── page.php
-├── single.php
-├── style.css
-├── tailwind.config.js
-├── package.json
-└── README.md
-```
+### 5. Configure Custom Post Types
+
+The theme includes three custom post types that need to be populated:
+
+#### Gallery Items
+1. Go to Gallery → Add New
+2. Add title (e.g., "Children Playing Football")
+3. Set featured image
+4. Select category (Activities, Learning, Events, Community)
+5. Publish
+
+#### Annual Reports
+1. Go to Annual Reports → Add New
+2. Add title and description
+3. Enter report year (e.g., "2023/24")
+4. Click "Upload PDF" to add report file
+5. Publish
+
+#### Testimonials
+1. Go to Testimonials → Add New
+2. Add testimonial text in editor
+3. Enter person name and role
+4. Upload photo (optional)
+5. Publish
+
+## 📄 Page Templates
+
+The theme includes these custom page templates:
+
+### Template: About
+- Mission statement
+- Team section
+- Values showcase
+- Impact statistics
+
+### Template: Our Work
+- Mission overview
+- Programs & activities
+- Impact stories
+- Annual reports (pulls from Annual Reports CPT)
+
+### Template: Donate
+- Donation amount selector
+- PayPal integration
+- Impact descriptions
+- Testimonial from founder
+
+### Template: Contact
+- AJAX contact form
+- Contact information display
+- Map placeholder
+- Social media links
+
+### Template: Get Involved
+- Volunteer opportunities
+- Application form
+- Testimonials (pulls from Testimonials CPT)
+- Call-to-action sections
+
+### Template: Gallery
+- Filterable photo gallery
+- Category filtering
+- Lightbox viewer
+- Pulls from Gallery Items CPT
+
+## 💳 PayPal Donation Setup
+
+### 1. Get PayPal Credentials
+
+**For Testing (Sandbox):**
+1. Go to https://developer.paypal.com/
+2. Log in with your PayPal account
+3. Create a Sandbox app
+4. Copy the "Client ID"
+
+**For Live Payments:**
+1. Go to https://developer.paypal.com/
+2. Switch to "Live" mode
+3. Create a Live app
+4. Copy the "Client ID"
+
+### 2. Configure in WordPress
+
+1. Go to Appearance → Customize → PayPal Settings
+2. Paste your Client ID
+3. Select Mode: "Sandbox" for testing, "Live" for production
+4. Select Currency (GBP recommended)
+5. Click "Publish"
+
+### 3. View Donations
+
+All donations are tracked in WordPress Admin:
+- Go to Dashboard → Donations
+- View donation history, amounts, and donor information
+- Email notifications sent to admin for each donation
+
+## 🖼️ Managing Content
+
+### Gallery
+
+**Add Gallery Items:**
+1. Gallery → Add New
+2. Title: Short description
+3. Featured Image: Upload photo
+4. Category: Select from Activities, Learning, Events, Community
+5. Publish
+
+**Tips:**
+- Use high-quality images (minimum 800x800px)
+- Images are automatically cropped to square
+- Categories are filterable on frontend
+
+### Annual Reports
+
+**Add Reports:**
+1. Annual Reports → Add New
+2. Title: Report name
+3. Report Year: Enter year (e.g., "2023/24")
+4. Click "Upload PDF" button
+5. Select or upload PDF file
+6. Add description in editor (optional)
+7. Publish
+
+### Testimonials
+
+**Add Testimonials:**
+1. Testimonials → Add New
+2. Content: Enter the testimonial quote
+3. Person Name: Volunteer's name
+4. Role: Their role (e.g., "Volunteer Teacher")
+5. Featured Image: Upload photo (optional)
+6. Publish
 
 ## 🎨 Customization
 
@@ -151,20 +250,17 @@ The theme uses:
 - **Fredoka** for headings (Google Fonts)
 - **Nunito** for body text (Google Fonts)
 
-To change fonts, edit `functions.php` and update the Google Fonts URL.
+### Login Screen
 
-### Colors
+The theme includes a custom branded login screen that matches your site design with animated background shapes and theme colors.
 
-Colors can be customized in two ways:
+### WhatsApp Integration
 
-1. **WordPress Customizer** (Appearance → Customize → FunLearn Smile Options → Theme Colors)
-2. **Tailwind Config** (edit `tailwind.config.js` for more control)
-
-### Animations
-
-Animations are controlled via:
-- `assets/css/main.css` - CSS animations
-- `assets/js/main.js` - JavaScript animations
+**Setup:**
+1. Go to Appearance → Customize → Contact Information
+2. Enter WhatsApp number with country code (e.g., 447123456789)
+3. Enter welcome message
+4. Floating button appears on all pages
 
 ## 📱 Responsive Breakpoints
 
@@ -178,72 +274,49 @@ The theme follows WCAG 2.1 AA standards:
 - Proper heading hierarchy
 - ARIA labels on interactive elements
 - Keyboard navigation support
-- Sufficient color contrast
+- Sufficient color contrast (4.5:1 minimum)
 - Skip to content link
 - Alt text for images
 
 ## 🚀 Performance Optimization
 
 - Minified CSS and JavaScript in production
-- Lazy loading for images (WordPress native)
+- Lazy loading for images
 - Preconnect to Google Fonts
 - Deferred JavaScript loading
 - Optimized database queries
 - Clean, semantic HTML
 
-## 📄 Page Templates
-
-The theme includes:
-- **Front Page** (Homepage with hero section)
-- **Default Page** (Standard page layout)
-- **Single Post** (Blog post layout)
-- **Archive** (Blog listing)
-- **404 Page** (Custom error page)
-
-## 🔧 Development
-
-### Watch Mode
-
-Run Tailwind in watch mode during development:
-
-```bash
-npm run dev
-```
-
-### Production Build
-
-Create minified CSS for production:
-
-```bash
-npm run build
-```
-
-### Adding Custom Styles
-
-1. Edit `assets/css/main.css`
-2. Run `npm run dev` to see changes
-3. Run `npm run build` before deploying
-
 ## 🐛 Troubleshooting
 
-### Styles Not Loading
+### PayPal Not Working
 
-1. Make sure you've run `npm run build`
-2. Check that `functions.php` is loading `output.css` not `main.css`
-3. Clear WordPress cache
-4. Hard refresh browser (Ctrl+Shift+R / Cmd+Shift+R)
+1. Verify Client ID is correct
+2. Check mode (Sandbox vs Live)
+3. Check browser console for errors
+4. Test with Sandbox first before going live
 
-### JavaScript Not Working
+### Gallery Filtering Issues
 
-1. Check browser console for errors
-2. Make sure jQuery is loaded
-3. Clear browser cache
+1. Open browser console (F12)
+2. Click filter buttons
+3. Check console output for category mismatches
+4. Verify gallery items have categories assigned
 
-### Animations Not Running
+### Contact Form Not Sending
 
-1. Check if IntersectionObserver is supported in browser
-2. Verify JavaScript file is loaded
-3. Check for console errors
+1. Verify email is configured in Customizer
+2. Check spam folder
+3. Test with different email addresses
+
+## 📊 Database Tables
+
+The theme creates these custom tables:
+
+### wp_funlearnsmile_donations
+Stores donation records with order ID, donor information, amount, currency, transaction status, and timestamp.
+
+**Access:** Dashboard → Donations
 
 ## 📝 Support
 
@@ -257,22 +330,51 @@ This theme is licensed under the GNU General Public License v2 or later.
 
 ## 🙏 Credits
 
-- Theme Design & Development: Fun Learn Smile Team
+- Theme Design & Development: FunLearn Smile Team
 - Fonts: Google Fonts (Fredoka & Nunito)
 - Icons: Heroicons (via inline SVG)
 - Framework: Tailwind CSS
+- Payment Processing: PayPal
 
 ## 📈 Changelog
 
-### Version 1.0.0
-- Initial release
-- Homepage with hero section
-- Blog functionality
-- Custom widgets
-- Responsive design
-- Accessibility features
-- Performance optimizations
+### Version 1.0.0 - January 2026
+
+**Core Features:**
+- Responsive homepage with hero section and statistics
+- Custom page templates (About, Our Work, Donate, Contact, Get Involved, Gallery)
+- Blog functionality with archive and single post layouts
+- Custom 404 page
+
+**Custom Post Types:**
+- Gallery Items with categories and lightbox
+- Annual Reports with PDF management
+- Testimonials with photos and roles
+
+**Integrations:**
+- PayPal donation system with admin tracking
+- WhatsApp floating button
+- AJAX contact form
+- Social media links
+
+**Customization:**
+- Comprehensive WordPress Customizer options
+- Custom login screen
+- Footer customization
+- Color and typography controls
+
+**Performance:**
+- Optimized asset loading
+- Lazy image loading
+- Minified CSS/JS
+- Clean database queries
+
+**Accessibility:**
+- WCAG 2.1 AA compliant
+- Keyboard navigation
+- Screen reader support
+- Proper ARIA labels
 
 ---
 
-Made with ❤️ for FunLearn Smile - Bringing joy through play-based education
+Made with ❤️ in Manchester for FunLearn Smile - Bringing joy through play-based education across Ghana
